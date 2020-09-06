@@ -102,18 +102,16 @@ public class PlaylistServiceImpl implements PlaylistService {
     private String getFiveUniqueWords(String lyrics) {
         final Matcher matcher = Pattern.compile("[a-zA-Z]+").matcher(lyrics);
         final Set<String> words = new HashSet<>();
+        final StringJoiner lyricJoiner = new StringJoiner(" ");
         int counter = 0;
         while (matcher.find()) {
-            if (words.add(matcher.group())) {
+            if (words.add(matcher.group().toLowerCase())) {
+                lyricJoiner.add(matcher.group());
                 ++counter;
             }
             if (counter == 5) {
                 break;
             }
-        }
-        final StringJoiner lyricJoiner = new StringJoiner(" ");
-        for (final String word : words) {
-            lyricJoiner.add(word);
         }
         return lyricJoiner.toString();
     }

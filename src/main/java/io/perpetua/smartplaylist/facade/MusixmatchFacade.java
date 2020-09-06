@@ -15,7 +15,7 @@ public class MusixmatchFacade {
     private final RestTemplate restTemplate;
 
     public String getTracks(String lyrics) {
-        ResponseEntity<String> response;
+        final ResponseEntity<String> response;
         try {
             final String url = UriComponentsBuilder.newInstance()
                     .scheme("https")
@@ -38,7 +38,7 @@ public class MusixmatchFacade {
     }
 
     public String getLyrics(long trackId) {
-        ResponseEntity<String> response;
+        final ResponseEntity<String> response;
         try {
             final String url = UriComponentsBuilder.newInstance()
                     .scheme("https")
