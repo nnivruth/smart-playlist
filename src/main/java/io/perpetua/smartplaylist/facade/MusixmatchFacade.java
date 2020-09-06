@@ -51,7 +51,8 @@ public class MusixmatchFacade {
                     .toUriString();
             log.info("Calling Musixmatch get track lyrics API {}", url);
             response = restTemplate.getForEntity(url, String.class);
-            log.debug("Response from Musixmatch get track lyrics API : {} \n {}", response.getStatusCodeValue(), response.getBody());
+            log.debug("Response from Musixmatch get track lyrics API : {} \n {}", response.getStatusCodeValue(),
+                    response.getBody());
         } catch (Exception e) {
             log.error("Exception while calling Musixmatch get track lyrics API : ", e);
             throw e;

@@ -48,7 +48,8 @@ public class PlaylistServiceImpl implements PlaylistService {
         }
     }
 
-    private void updateSongs(String clientId, boolean newClient, List<TrackDto> tracks, List<Song> songs) throws JsonProcessingException {
+    private void updateSongs(String clientId, boolean newClient, List<TrackDto> tracks, List<Song> songs)
+            throws JsonProcessingException {
         if (tracks != null) {
             for (final TrackDto trackDto : tracks) {
                 final TrackDto.Track track = trackDto.getTrack();
