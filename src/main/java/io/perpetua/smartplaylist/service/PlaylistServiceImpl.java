@@ -103,7 +103,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         final Matcher matcher = Pattern.compile("[a-zA-Z]+").matcher(lyrics);
         final Set<String> words = new HashSet<>();
         final StringJoiner lyricJoiner = new StringJoiner(" ");
-        int counter = 0;
+        byte counter = 0;
         while (matcher.find()) {
             if (words.add(matcher.group().toLowerCase())) {
                 lyricJoiner.add(matcher.group());
