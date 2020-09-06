@@ -90,15 +90,6 @@ public class PlaylistServiceImpl implements PlaylistService {
                 .build();
     }
 
-    private String getLyrics(long trackId) throws JsonProcessingException {
-        return objectMapper.treeToValue(objectMapper.readTree(getJsonStr(musixmatchFacade.getLyrics(trackId)))
-                .get("message").get("body"), LyricsDto.class).getLyrics().getLyrics_body();
-    }
-
-    private String getJsonStr(String jsonP) {
-        return jsonP.substring(jsonP.indexOf('(') + 1, jsonP.lastIndexOf(')'));
-    }
-
     private String getFiveUniqueWords(String lyrics) {
         final Matcher matcher = Pattern.compile("[a-zA-Z]+").matcher(lyrics);
         final Set<String> words = new HashSet<>();
@@ -114,6 +105,15 @@ public class PlaylistServiceImpl implements PlaylistService {
             }
         }
         return lyricJoiner.toString();
+    }
+
+    private String getLyrics(long trackId) throws JsonProcessingException {
+        return objectMapper.treeToValue(objectMapper.readTree(getJsonStr(musixmatchFacade.getLyrics(trackId)))
+                .get("message").get("body"), LyricsDto.class).getLyrics().getLyrics_body();
+    }
+
+    private String getJsonStr(String jsonP) {
+        return jsonP.substring(jsonP.indexOf('(') + 1, jsonP.lastIndexOf(')'));
     }
 
 }
