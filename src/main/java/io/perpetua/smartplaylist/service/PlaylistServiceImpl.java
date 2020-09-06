@@ -58,10 +58,10 @@ public class PlaylistServiceImpl implements PlaylistService {
                     if (newClient) {
                         final Set<Long> trackIds = new HashSet<>();
                         trackIds.add(track.getTrack_id());
-                        final Playlist playlist = new Playlist();
-                        playlist.setTrackIds(trackIds);
-                        playlist.setLastSong(song);
-                        playlistMap.put(clientId, playlist);
+                        playlistMap.put(clientId, Playlist.builder()
+                                .trackIds(trackIds)
+                                .lastSong(song)
+                                .build());
                         break;
                     } else {
                         final Playlist playlist = playlistMap.get(clientId);
