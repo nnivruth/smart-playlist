@@ -29,7 +29,8 @@ public class MusixmatchFacade {
                     .toUriString();
             log.info("Calling Musixmatch track search API {}", url);
             response = restTemplate.getForEntity(url, String.class);
-            log.debug("Response from Musixmatch track search API : {} \n {}", response.getStatusCodeValue(), response.getBody());
+            log.debug("Response from Musixmatch track search API : {} \n {}", response.getStatusCodeValue(),
+                    response.getBody());
         } catch (Exception e) {
             log.error("Exception while calling Musixmatch track search API : ", e);
             throw e;
