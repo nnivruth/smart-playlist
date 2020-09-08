@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface PlaylistService {
 
-    List<Song> getSongs(String clientId, String category) throws JsonProcessingException;
+    List<Song> getSongs(final String clientId, final String category) throws JsonProcessingException;
 
 }

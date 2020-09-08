@@ -32,7 +32,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     private final Map<String, Playlist> playlistMap = new HashMap<>();
 
     @Override
-    public List<Song> getSongs(String clientId, String category) throws JsonProcessingException {
+    public List<Song> getSongs(final String clientId, final String category) throws JsonProcessingException {
         final List<Song> songs = new ArrayList<>();
         try {
             if (playlistMap.containsKey(clientId)) {
@@ -41,24 +41,25 @@ public class PlaylistServiceImpl implements PlaylistService {
                 updateSongs(clientId, true, getTracks(null, category), songs);
                 updateSongs(clientId, false, getTracks(clientId, null), songs);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Exception while getting songs for playlist : ", e);
             throw e;
         }
         return songs;
     }
 
-    private void updateSongs(String clientId, boolean newClient, List<TrackDto> tracks, List<Song> songs)
-            throws JsonProcessingException {
+    private void updateSongs(final String clientId, final boolean newClient, final List<TrackDto> tracks,
+                             final List<Song> songs) throws JsonProcessingException {
         if (tracks != null) {
             for (final TrackDto trackDto : tracks) {
                 final TrackDto.Track track = trackDto.getTrack();
                 if (track.getHas_lyrics() == 1) {
                     final Song song = getSong(track);
+                    final long trackId = track.getTrack_id();
                     if (newClient) {
                         songs.add(song);
                         final Set<Long> trackIds = new HashSet<>();
-                        trackIds.add(track.getTrack_id());
+                        trackIds.add(trackId);
                         playlistMap.put(clientId, Playlist.builder()
                                 .trackIds(trackIds)
                                 .lastSong(song)
@@ -66,7 +67,7 @@ public class PlaylistServiceImpl implements PlaylistService {
                         break;
                     } else {
                         final Playlist playlist = playlistMap.get(clientId);
-                        if (playlist.getTrackIds().add(track.getTrack_id())) {
+                        if (playlist.getTrackIds().add(trackId)) {
                             songs.add(song);
                             playlist.setLastSong(song);
                             playlistMap.put(clientId, playlist);
@@ -78,13 +79,13 @@ public class PlaylistServiceImpl implements PlaylistService {
         }
     }
 
-    private List<TrackDto> getTracks(String clientId, String category) throws JsonProcessingException {
+    private List<TrackDto> getTracks(final String clientId, final String category) throws JsonProcessingException {
         return objectMapper.treeToValue(objectMapper.readTree(getJsonStr(musixmatchFacade.getTracks(category != null ?
                 category : getFiveUniqueWords(playlistMap.get(clientId).getLastSong().getLyrics())))).get("message")
                 .get("body"), Tracks.class).getTrack_list();
     }
 
-    private Song getSong(TrackDto.Track track) throws JsonProcessingException {
+    private Song getSong(final TrackDto.Track track) throws JsonProcessingException {
         return Song.builder()
                 .title(track.getTrack_name())
                 .artist(track.getArtist_name())
@@ -92,14 +93,15 @@ public class PlaylistServiceImpl implements PlaylistService {
                 .build();
     }
 
-    private String getFiveUniqueWords(String lyrics) {
+    private String getFiveUniqueWords(final String lyrics) {
         final Matcher matcher = Pattern.compile("[a-zA-Z]+").matcher(lyrics);
         final Set<String> words = new HashSet<>();
         final StringJoiner lyricJoiner = new StringJoiner(",");
         byte counter = 0;
         while (matcher.find()) {
-            if (words.add(matcher.group().toLowerCase())) {
-                lyricJoiner.add(matcher.group());
+            final String word = matcher.group();
+            if (words.add(word.toLowerCase())) {
+                lyricJoiner.add(word);
                 ++counter;
             }
             if (counter == 5) {
@@ -109,12 +111,12 @@ public class PlaylistServiceImpl implements PlaylistService {
         return lyricJoiner.toString();
     }
 
-    private String getLyrics(long trackId) throws JsonProcessingException {
+    private String getLyrics(final long trackId) throws JsonProcessingException {
         return objectMapper.treeToValue(objectMapper.readTree(getJsonStr(musixmatchFacade.getLyrics(trackId)))
                 .get("message").get("body"), LyricsDto.class).getLyrics().getLyrics_body();
     }
 
-    private String getJsonStr(String jsonP) {
+    private String getJsonStr(final String jsonP) {
         return jsonP.substring(jsonP.indexOf('(') + 1, jsonP.lastIndexOf(')'));
     }
 

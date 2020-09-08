@@ -14,7 +14,7 @@ public class MusixmatchFacade {
 
     private final RestTemplate restTemplate;
 
-    public String getTracks(String lyrics) {
+    public String getTracks(final String lyrics) {
         final ResponseEntity<String> response;
         try {
             final String url = UriComponentsBuilder.newInstance()
@@ -31,14 +31,14 @@ public class MusixmatchFacade {
             response = restTemplate.getForEntity(url, String.class);
             log.debug("Response from Musixmatch track search API : {} \n {}", response.getStatusCodeValue(),
                     response.getBody());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Exception while calling Musixmatch track search API : ", e);
             throw e;
         }
         return response.getBody();
     }
 
-    public String getLyrics(long trackId) {
+    public String getLyrics(final long trackId) {
         final ResponseEntity<String> response;
         try {
             final String url = UriComponentsBuilder.newInstance()
@@ -54,7 +54,7 @@ public class MusixmatchFacade {
             response = restTemplate.getForEntity(url, String.class);
             log.debug("Response from Musixmatch get track lyrics API : {} \n {}", response.getStatusCodeValue(),
                     response.getBody());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Exception while calling Musixmatch get track lyrics API : ", e);
             throw e;
         }
