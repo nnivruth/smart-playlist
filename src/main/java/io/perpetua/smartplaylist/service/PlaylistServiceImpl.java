@@ -55,8 +55,8 @@ public class PlaylistServiceImpl implements PlaylistService {
                 final TrackDto.Track track = trackDto.getTrack();
                 if (track.getHas_lyrics() == 1) {
                     final Song song = getSong(track);
-                    songs.add(song);
                     if (newClient) {
+                        songs.add(song);
                         final Set<Long> trackIds = new HashSet<>();
                         trackIds.add(track.getTrack_id());
                         playlistMap.put(clientId, Playlist.builder()
@@ -67,6 +67,7 @@ public class PlaylistServiceImpl implements PlaylistService {
                     } else {
                         final Playlist playlist = playlistMap.get(clientId);
                         if (playlist.getTrackIds().add(track.getTrack_id())) {
+                            songs.add(song);
                             playlist.setLastSong(song);
                             playlistMap.put(clientId, playlist);
                             break;
@@ -94,7 +95,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     private String getFiveUniqueWords(String lyrics) {
         final Matcher matcher = Pattern.compile("[a-zA-Z]+").matcher(lyrics);
         final Set<String> words = new HashSet<>();
-        final StringJoiner lyricJoiner = new StringJoiner(" ");
+        final StringJoiner lyricJoiner = new StringJoiner(",");
         byte counter = 0;
         while (matcher.find()) {
             if (words.add(matcher.group().toLowerCase())) {
