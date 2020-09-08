@@ -33,19 +33,19 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     public List<Song> getSongs(String clientId, String category) throws JsonProcessingException {
+        final List<Song> songs = new ArrayList<>();
         try {
-            final List<Song> songs = new ArrayList<>();
             if (playlistMap.containsKey(clientId)) {
                 updateSongs(clientId, false, getTracks(clientId, null), songs);
             } else {
                 updateSongs(clientId, true, getTracks(null, category), songs);
                 updateSongs(clientId, false, getTracks(clientId, null), songs);
             }
-            return songs;
         } catch (Exception e) {
             log.error("Exception while getting songs for playlist : ", e);
             throw e;
         }
+        return songs;
     }
 
     private void updateSongs(String clientId, boolean newClient, List<TrackDto> tracks, List<Song> songs)
