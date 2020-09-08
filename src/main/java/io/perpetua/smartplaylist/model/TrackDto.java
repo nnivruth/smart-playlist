@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class TrackDto {
     private Track track;
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public class Track {
         private long track_id;
         private String track_name;

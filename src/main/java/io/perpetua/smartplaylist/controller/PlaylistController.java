@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.perpetua.smartplaylist.model.Song;
 import io.perpetua.smartplaylist.service.PlaylistService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,9 +21,9 @@ public class PlaylistController {
     private final PlaylistService playlistService;
 
     @GetMapping
-    public List<Song> getSongs(@RequestHeader("clientId") String clientId,
-                               @RequestParam String category) throws JsonProcessingException {
-        return playlistService.getSongs(clientId, category);
+    public ResponseEntity<List<Song>> getSongs(@RequestHeader("clientId") String clientId,
+                                               @RequestParam String category) throws JsonProcessingException {
+        return ResponseEntity.ok(playlistService.getSongs(clientId, category));
     }
 
 }

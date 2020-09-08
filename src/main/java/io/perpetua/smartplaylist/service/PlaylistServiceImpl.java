@@ -7,7 +7,7 @@ import io.perpetua.smartplaylist.model.LyricsDto;
 import io.perpetua.smartplaylist.model.Playlist;
 import io.perpetua.smartplaylist.model.Song;
 import io.perpetua.smartplaylist.model.TrackDto;
-import io.perpetua.smartplaylist.model.TrackList;
+import io.perpetua.smartplaylist.model.Tracks;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ public class PlaylistServiceImpl implements PlaylistService {
             }
             return songs;
         } catch (Exception e) {
-            log.error("Exception while getting songs for playlist: ", e);
+            log.error("Exception while getting songs for playlist : ", e);
             throw e;
         }
     }
@@ -80,7 +80,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     private List<TrackDto> getTracks(String clientId, String category) throws JsonProcessingException {
         return objectMapper.treeToValue(objectMapper.readTree(getJsonStr(musixmatchFacade.getTracks(category != null ?
                 category : getFiveUniqueWords(playlistMap.get(clientId).getLastSong().getLyrics())))).get("message")
-                .get("body"), TrackList.class).getTrack_list();
+                .get("body"), Tracks.class).getTrack_list();
     }
 
     private Song getSong(TrackDto.Track track) throws JsonProcessingException {

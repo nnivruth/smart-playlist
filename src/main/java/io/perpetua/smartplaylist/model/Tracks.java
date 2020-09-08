@@ -5,6 +5,6 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class TrackList {
+public class Tracks {
     private List<TrackDto> track_list;
 }
