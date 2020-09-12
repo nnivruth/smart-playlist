@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
@@ -43,9 +42,6 @@ public class PlaylistServiceImpl implements PlaylistService {
                 }
                 updateSongs(clientId, category, false, getTracks(clientId, false, category), songs);
             } else {
-                if (Objects.isNull(category)) {
-                    throw new IllegalArgumentException("Category has to be specified for rendering initial playlist");
-                }
                 updateSongs(clientId, category, true, getTracks(null, true, category), songs);
                 updateSongs(clientId, category, false,
                         getTracks(clientId, false, category), songs);
