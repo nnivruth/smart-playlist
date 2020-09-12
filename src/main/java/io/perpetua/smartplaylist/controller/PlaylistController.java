@@ -22,8 +22,12 @@ public class PlaylistController {
 
     @GetMapping
     public ResponseEntity<List<Song>> getSongs(@RequestHeader("clientId") final String clientId,
-                                               @RequestParam final String category) throws JsonProcessingException {
-        return ResponseEntity.ok(playlistService.getSongs(clientId, category));
+                                               @RequestParam(required = false) String category)
+            throws JsonProcessingException {
+        if (category != null) {
+            category = category.toLowerCase();
+        }
+        return ResponseEntity.ok(playlistService.getSongs(clientId.toLowerCase(), category));
     }
 
 }

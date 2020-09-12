@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
@@ -29,17 +30,25 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     private final ObjectMapper objectMapper;
     private final MusixmatchFacade musixmatchFacade;
-    private final Map<String, Playlist> playlistMap = new HashMap<>();
+    private final Map<String, Map<String, Playlist>> playlistMap = new HashMap<>();
 
     @Override
     public List<Song> getSongs(final String clientId, final String category) throws JsonProcessingException {
         final List<Song> songs = new ArrayList<>();
         try {
             if (playlistMap.containsKey(clientId)) {
-                updateSongs(clientId, false, getTracks(clientId, null), songs);
+                if (!playlistMap.get(clientId).containsKey(category)) {
+                    updateSongs(clientId, category, false,
+                            getTracks(clientId, true, category), songs);
+                }
+                updateSongs(clientId, category, false, getTracks(clientId, false, category), songs);
             } else {
-                updateSongs(clientId, true, getTracks(null, category), songs);
-                updateSongs(clientId, false, getTracks(clientId, null), songs);
+                if (Objects.isNull(category)) {
+                    throw new IllegalArgumentException("Category has to be specified for rendering initial playlist");
+                }
+                updateSongs(clientId, category, true, getTracks(null, true, category), songs);
+                updateSongs(clientId, category, false,
+                        getTracks(clientId, false, category), songs);
             }
         } catch (final Exception e) {
             log.error("Exception while getting songs for playlist : ", e);
@@ -48,8 +57,8 @@ public class PlaylistServiceImpl implements PlaylistService {
         return songs;
     }
 
-    private void updateSongs(final String clientId, final boolean newClient, final List<TrackDto> tracks,
-                             final List<Song> songs) throws JsonProcessingException {
+    private void updateSongs(final String clientId, final String category, final boolean newClient,
+                             final List<TrackDto> tracks, final List<Song> songs) throws JsonProcessingException {
         if (tracks != null) {
             for (final TrackDto trackDto : tracks) {
                 final TrackDto.Track track = trackDto.getTrack();
@@ -60,17 +69,25 @@ public class PlaylistServiceImpl implements PlaylistService {
                         songs.add(song);
                         final Set<Long> trackIds = new HashSet<>();
                         trackIds.add(trackId);
-                        playlistMap.put(clientId, Playlist.builder()
+                        final Map<String, Playlist> categoryMap = new HashMap<>();
+                        categoryMap.put(category, Playlist.builder()
                                 .trackIds(trackIds)
                                 .lastSong(song)
                                 .build());
+                        playlistMap.put(clientId, categoryMap);
                         break;
                     } else {
-                        final Playlist playlist = playlistMap.get(clientId);
+                        final Map<String, Playlist> categoryMap = playlistMap.get(clientId);
+                        if (!categoryMap.containsKey(category)) {
+                            categoryMap.put(category, Playlist.builder()
+                                    .trackIds(new HashSet<>())
+                                    .build());
+                        }
+                        final Playlist playlist = categoryMap.get(category);
                         if (playlist.getTrackIds().add(trackId)) {
                             songs.add(song);
                             playlist.setLastSong(song);
-                            playlistMap.put(clientId, playlist);
+                            playlistMap.put(clientId, categoryMap);
                             break;
                         }
                     }
@@ -79,10 +96,11 @@ public class PlaylistServiceImpl implements PlaylistService {
         }
     }
 
-    private List<TrackDto> getTracks(final String clientId, final String category) throws JsonProcessingException {
-        return objectMapper.treeToValue(objectMapper.readTree(getJsonStr(musixmatchFacade.getTracks(category != null ?
-                category : getFiveUniqueWords(playlistMap.get(clientId).getLastSong().getLyrics())))).get("message")
-                .get("body"), Tracks.class).getTrack_list();
+    private List<TrackDto> getTracks(final String clientId, final boolean newCategory,
+                                     final String category) throws JsonProcessingException {
+        return objectMapper.treeToValue(objectMapper.readTree(getJsonStr(musixmatchFacade.getTracks(newCategory ?
+                category : getFiveUniqueWords(playlistMap.get(clientId).get(category).getLastSong().getLyrics()))))
+                .get("message").get("body"), Tracks.class).getTrack_list();
     }
 
     private Song getSong(final TrackDto.Track track) throws JsonProcessingException {
